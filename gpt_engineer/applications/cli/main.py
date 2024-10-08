@@ -62,6 +62,7 @@ from gpt_engineer.core.git import stage_uncommitted_to_git
 from gpt_engineer.core.preprompts_holder import PrepromptsHolder
 from gpt_engineer.core.prompt import Prompt
 from gpt_engineer.tools.custom_steps import clarified_gen, lite_gen, self_heal
+from gpt_engineer.tools.document_loader import DocumentLoader
 
 app = typer.Typer(
     context_settings={"help_option_names": ["-h", "--help"]}
@@ -281,13 +282,19 @@ def format_installed_packages(packages):
 def main(
     project_path: str = typer.Argument(".", help="path"),
     model: str = typer.Option(
-        os.environ.get("MODEL_NAME", "gpt-4o"), "--model", "-m", help="model id string"
+        os.environ.get("MODEL_NAME"), "--model", "-m", help="model id string"
     ),
     temperature: float = typer.Option(
         0.1,
         "--temperature",
         "-t",
         help="Controls randomness: lower values for more focused, deterministic outputs",
+    ),
+    knowledge_base_path: str = typer.Option(
+    "",
+    "--knowledge_base",
+    "-kb",
+    help="Path to the folder containing knowledge base documents (PDF, DOCX, MD, HTML).",
     ),
     improve_mode: bool = typer.Option(
         False,
@@ -388,6 +395,8 @@ def main(
 
     Parameters
     ----------
+    knowledge_base_path : str
+        Path to the folder containing knowledge base documents (PDF, DOCX, MD, HTML).
     project_path : str
         The file path to the project directory.
     model : str
@@ -455,11 +464,15 @@ def main(
 
     load_env_if_needed()
 
+    print("MODEL_NAME:", os.getenv('MODEL_NAME'))
+    print("OPENAI_API_BASE:", os.getenv('OPENAI_API_BASE'))
+    print("OPENAI_API_KEY:", os.getenv('OPENAI_API_KEY'))
+
     if llm_via_clipboard:
         ai = ClipboardAI()
     else:
         ai = AI(
-            model_name=model,
+            model_name=os.getenv('MODEL_NAME') or model,
             temperature=temperature,
             azure_endpoint=azure_endpoint,
         )
@@ -474,6 +487,25 @@ def main(
         image_directory,
         entrypoint_prompt_file,
     )
+    
+    pinecone_api_key = os.getenv("PINECONE_API_KEY")
+    index_name = os.getenv("PINECONE_INDEX_NAME")
+    jina_api_key = os.getenv("JINA_API_KEY")
+
+    document_loader = DocumentLoader(pinecone_api_key, jina_api_key, index_name)
+
+    if knowledge_base_path:
+        user_docs = [os.path.join(knowledge_base_path, f) for f in os.listdir(knowledge_base_path) if f.endswith(('.pdf', '.docx', '.md', '.html', '.htm'))]
+        # 假设用户文档路径存储在 user_docs 变量中
+        #user_docs = []  # 这里需要添加逻辑来获取用户上传的文档路径
+        for doc in user_docs:
+         document_loader.load_and_index_document(doc)
+
+        # 在生成代码之前,先查询相关文档
+        relevant_docs = document_loader.query_documents(prompt.text)
+
+        # 将相关文档的内容添加到 prompt 中
+        prompt.text += "\n\nRelevant information:\n" + "\n".join([doc.page_content for doc in relevant_docs])
 
     # todo: if ai.vision is false and not llm_via_clipboard - ask if they would like to use gpt-4-vision-preview instead? If so recreate AI
     if not ai.vision:
