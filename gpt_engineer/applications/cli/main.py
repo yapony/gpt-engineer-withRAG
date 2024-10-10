@@ -90,6 +90,22 @@ def load_env_if_needed():
     if os.getenv("ANTHROPIC_API_KEY") is None:
         load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
 
+    if os.getenv("PINECONE_API_KEY") is None:
+        load_dotenv()
+    if os.getenv("PINECONE_API_KEY") is None:
+        load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
+
+    if os.getenv("JINA_API_KEY") is None:
+        load_dotenv()
+    if os.getenv("JINA_API_KEY") is None:
+        load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
+
+    if os.getenv("PINECONE_INDEX_NAME") is None:
+        load_dotenv()
+    if os.getenv("PINECONE_INDEX_NAME") is None:
+        load_dotenv(dotenv_path=os.path.join(os.getcwd(), ".env"))
+    
+
 
 def concatenate_paths(base_path, sub_path):
     # Compute the relative path from base_path to sub_path
@@ -465,8 +481,8 @@ def main(
     load_env_if_needed()
 
     print("MODEL_NAME:", os.getenv('MODEL_NAME'))
-    print("OPENAI_API_BASE:", os.getenv('OPENAI_API_BASE'))
-    print("OPENAI_API_KEY:", os.getenv('OPENAI_API_KEY'))
+    #print("OPENAI_API_BASE:", os.getenv('OPENAI_API_BASE'))
+    #print("OPENAI_API_KEY:", os.getenv('OPENAI_API_KEY'))
 
     if llm_via_clipboard:
         ai = ClipboardAI()
@@ -489,22 +505,19 @@ def main(
     )
     
     pinecone_api_key = os.getenv("PINECONE_API_KEY")
-    index_name = os.getenv("PINECONE_INDEX_NAME")
     jina_api_key = os.getenv("JINA_API_KEY")
+    index_name = os.getenv("PINECONE_INDEX_NAME")
 
     document_loader = DocumentLoader(pinecone_api_key, jina_api_key, index_name)
 
     if knowledge_base_path:
         user_docs = [os.path.join(knowledge_base_path, f) for f in os.listdir(knowledge_base_path) if f.endswith(('.pdf', '.docx', '.md', '.html', '.htm'))]
-        # 假设用户文档路径存储在 user_docs 变量中
-        #user_docs = []  # 这里需要添加逻辑来获取用户上传的文档路径
+
         for doc in user_docs:
          document_loader.load_and_index_document(doc)
 
-        # 在生成代码之前,先查询相关文档
         relevant_docs = document_loader.query_documents(prompt.text)
 
-        # 将相关文档的内容添加到 prompt 中
         prompt.text += "\n\nRelevant information:\n" + "\n".join([doc.page_content for doc in relevant_docs])
 
     # todo: if ai.vision is false and not llm_via_clipboard - ask if they would like to use gpt-4-vision-preview instead? If so recreate AI

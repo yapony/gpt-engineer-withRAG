@@ -218,7 +218,7 @@ def ask_collection_consent() -> bool:
     if answer.lower() == "y":
         path = Path(".gpte_consent")
         path.write_text("true")
-        print(colored("Thank you️", "light_green"))
+        print(colored("Thank you锔�", "light_green"))
         print()
         print(
             "(If you no longer wish to participate in data collection, delete the file .gpte_consent)"
@@ -227,7 +227,7 @@ def ask_collection_consent() -> bool:
     else:
         print(
             colored(
-                "No worries! GPT Engineer will not collect your prompts. ❤️",
+                "No worries! GPT Engineer will not collect your prompts. 鉂わ笍",
                 "light_green",
             )
         )

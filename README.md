@@ -83,7 +83,11 @@ Editing the `preprompts` is how you make the agent remember things between proje
 
 ### Vision
 
+<<<<<<< HEAD
 By default, gpt-engineer expects text input via a `prompt` file. It can also accept image inputs for vision-capable models. This can be useful for adding UX or architecture diagrams as additional context for GPT Engineer. You can do this by specifying an image directory with the `â€-image_directory` flag and setting a vision-capable model in the second CLI argument.
+=======
+By default, gpt-engineer expects text input via a `prompt` file. It can also accept image inputs for vision-capable models. This can be useful for adding UX or architecture diagrams as additional context for GPT Engineer. You can do this by specifying an image directory with the `�-image_directory` flag and setting a vision-capable model in the second CLI argument.
+>>>>>>> e2c16d0 (Add RAG feature to original gpt-engineer. Looking for additinal knowledge before generating code. Using Pinecone and Jina for relevant services.)
 
 E.g. `gpte projects/example-vision gpt-4-vision-preview --prompt_file prompt/text --image_directory prompt/images -i`
 
@@ -119,9 +123,9 @@ https://github.com/gpt-engineer-org/gpt-engineer/assets/4467025/40d0a9a8-82d0-44
 
 gpt-engineer now supports using your own knowledge base for code generation. To use this feature:
 
-1. Set up your Pinecone API key and index name in the `.env` file.
+1. Set up your Pinecone API key and index name in the '.env' file.
 2. We are now using Jina embedding service to embed knowledge documents (see 'gpt_engineer/applications/tools/document_loader.py'). Please 
-   set up your Jina api key in the `.env` file to enable this. If you want to use different embedding models from other service providers, please modify the settings in 'document_loder.py' and '.env' files.
+   set up your Jina api key in the '.env' file to enable this. If you want to use different embedding models from other service providers, please modify the settings in 'document_loder.py' and '.env' files.
 3. Place your knowledge documents (PDF, DOCX, MD, HTML) in 'KnowledgeBase' folder.
 4. When running gpt-engineer, specify the path to your knowledge documents with "--knowledge_base KnowledgeBase" or "-kb KnowledgeBase".
 

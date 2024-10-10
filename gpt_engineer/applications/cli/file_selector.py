@@ -424,10 +424,10 @@ class DisplayablePath(object):
     in a way that is similar to a file explorer's tree view.
     """
 
-    display_filename_prefix_middle = "├── "
-    display_filename_prefix_last = "└── "
+    display_filename_prefix_middle = "鈹溾攢鈹€ "
+    display_filename_prefix_last = "鈹斺攢鈹€ "
     display_parent_prefix_middle = "    "
-    display_parent_prefix_last = "│   "
+    display_parent_prefix_last = "鈹�   "
 
     def __init__(
         self, path: Union[str, Path], parent_path: "DisplayablePath", is_last: bool

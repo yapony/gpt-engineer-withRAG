@@ -1,7 +1,7 @@
 import os
 import logging
-from langchain.document_loaders import PyPDFLoader, Docx2txtLoader, UnstructuredMarkdownLoader
-from langchain.document_loaders.web_base import WebBaseLoader
+from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, UnstructuredMarkdownLoader
+from langchain_community.document_loaders.web_base import WebBaseLoader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from pinecone import Pinecone, ServerlessSpec
 from langchain_pinecone import PineconeVectorStore
@@ -38,13 +38,14 @@ class DocumentLoader:
         self.pinecone_api_key = pinecone_api_key
         self.index_name = index_name
         self.embeddings = JinaEmbeddings(api_key=jina_api_key, dimensions=1024)
-        global logger  # 添加这一行以定义 logger
-        logger = logging.getLogger(__name__)  # 初始化 logger
+        global logger  
+        logger = logging.getLogger(__name__) 
 
         try:
             self.pc = Pinecone(api_key=self.pinecone_api_key)
-            logger.info(f'Available indexes: {self.pc.list_indexes()}')
-            if self.index_name not in self.pc.list_indexes().names():
+            indexes = self.pc.list_indexes()
+            logger.info(f'Available indexes: {indexes}')
+            if self.index_name not in [index.name for index in indexes]:
                 logger.info(f"Creating new index: gpt-engineer-index ")
                 self.pc.create_index(name="gpt-engineer-index", dimension=1024, metric="cosine", 
                                      spec=ServerlessSpec(cloud="aws", region="us-east-1"))
@@ -98,7 +99,6 @@ class DocumentLoader:
             self.vectorStore.add_documents(texts)
             logger.info(f"Added {len(texts)} text chunks to Pinecone index for {file_name}")
 
-            # 验证索引是否包含新添加的文档
             #self.verify_index_content()
 
         except Exception as e:
@@ -110,7 +110,7 @@ class DocumentLoader:
     #        index = self.pc.Index(self.index_name)
     #        stats = index.describe_index_stats()
     #        logger.info(f"Index stats after loading: {stats}")
-    #        # 可以在这里添加更详细的验证逻辑，如检查向量数量是否增加等
+    #        # TODO: Add more checks here
     #    except Exception as e:
     #        logger.error(f"Error verifying index content: {e}")
 
