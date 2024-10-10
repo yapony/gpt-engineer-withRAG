@@ -83,7 +83,7 @@ Editing the `preprompts` is how you make the agent remember things between proje
 
 ### Vision
 
-By default, gpt-engineer expects text input via a `prompt` file. It can also accept image inputs for vision-capable models. This can be useful for adding UX or architecture diagrams as additional context for GPT Engineer. You can do this by specifying an image directory with the `�-image_directory` flag and setting a vision-capable model in the second CLI argument.
+By default, gpt-engineer expects text input via a `prompt` file. It can also accept image inputs for vision-capable models. This can be useful for adding UX or architecture diagrams as additional context for GPT Engineer. You can do this by specifying an image directory with the `â€-image_directory` flag and setting a vision-capable model in the second CLI argument.
 
 E.g. `gpte projects/example-vision gpt-4-vision-preview --prompt_file prompt/text --image_directory prompt/images -i`
 
@@ -124,3 +124,11 @@ gpt-engineer now supports using your own knowledge base for code generation. To 
    set up your Jina api key in the `.env` file to enable this. If you want to use different embedding models from other service providers, please modify the settings in 'document_loder.py' and '.env' files.
 3. Place your knowledge documents (PDF, DOCX, MD, HTML) in 'KnowledgeBase' folder.
 4. When running gpt-engineer, specify the path to your knowledge documents with "--knowledge_base KnowledgeBase" or "-kb KnowledgeBase".
+
+
+## Example
+
+
+
+https://github.com/user-attachments/assets/9f4e4d73-704e-47e9-9fca-30aa49382741
+
